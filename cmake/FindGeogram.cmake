@@ -136,8 +136,8 @@ if(WIN32)
       # If we use static library, we link with the static C++ runtime.
       foreach(config ${CMAKE_CONFIGURATION_TYPES})
          string(TOUPPER ${config} config)
-         string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-         string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+         #string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+         #string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
       endforeach()
   endif()
 
