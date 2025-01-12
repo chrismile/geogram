@@ -61,6 +61,9 @@
 #    define GEO_USE_ARM32_ATOMICS
 #  elif defined(GEO_OS_ANDROID)
 #    define GEO_USE_ANDROID_ATOMICS
+#  elif defined(__aarch64__)
+// TODO; this might break things.
+#    define GEO_USE_DUMMY_ATOMICS
 #  else
 #    define GEO_USE_X86_ATOMICS
 #  endif
