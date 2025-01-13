@@ -9,9 +9,9 @@ set(SHELL_SUFFIX "sh")
 SET(CMAKE_SYSTEM_NAME    Windows) # Target system name
 SET(CMAKE_SYSTEM_VERSION 1)
 
-SET(CMAKE_AR    "x86_64-w64-mingw32-ar")
-SET(CMAKE_RC_COMPILER    "x86_64-w64-mingw32-windres")
-SET(CMAKE_RANLIB         "x86_64-w64-mingw32-ranlib")
+#SET(CMAKE_AR    "x86_64-w64-mingw32-ar")
+#SET(CMAKE_RC_COMPILER    "x86_64-w64-mingw32-windres")
+#SET(CMAKE_RANLIB         "x86_64-w64-mingw32-ranlib")
 
 # Configure the behaviour of the find commands
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
