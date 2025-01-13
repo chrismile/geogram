@@ -61,9 +61,9 @@
 #    define GEO_USE_ARM32_ATOMICS
 #  elif defined(GEO_OS_ANDROID)
 #    define GEO_USE_ANDROID_ATOMICS
-#  elif defined(__aarch64__)
-// TODO; this might break things.
-#    define GEO_USE_DUMMY_ATOMICS
+#  elif defined(__aarch64__) && defined(__GNUC__)
+// Added by Christoph; this needs more testing.
+#    define GEO_USE_GNUC_ATOMICS
 #  else
 #    define GEO_USE_X86_ATOMICS
 #  endif
@@ -80,6 +80,52 @@ inline char atomic_bittestandset_x86(volatile unsigned int*, unsigned int) {
 
 inline char atomic_bittestandreset_x86(volatile unsigned int*, unsigned int) {
     return 0;
+}
+
+#elif defined(GEO_USE_GNUC_ATOMICS)
+
+inline void geo_pause() {
+}
+
+// Added by Christoph; this needs more testing.
+// For more details see: https://gcc.gnu.org/onlinedocs/gcc-9.2.0/gcc/_005f_005fatomic-Builtins.html
+
+/**
+ * \brief Atomically tests and sets a bit
+ * \details Sets bit \p bit of *\p ptr and returns its previous value.
+ * The function is atomic and acts as a read-write memory barrier.
+ * \param[in] ptr a pointer to an unsigned integer
+ * \param[in] bit index of the bit to set in *\p ptr
+ * \return the previous value of bit \p bit
+ */
+inline char atomic_bittestandset_x86(volatile unsigned int* ptr, unsigned int bit) {
+    unsigned int prevVal = *ptr;
+    unsigned int newVal = prevVal | ((unsigned int)1 << bit);
+    unsigned int expectedVal = prevVal;
+    bool worked = __atomic_compare_exchange(ptr, &expectedVal, &newVal, true, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    if (!worked) {
+        return 1; // retry
+    }
+    return char(prevVal >> bit & (unsigned int)1);
+}
+
+/**
+ * \brief Atomically tests and resets a bit
+ * \details Resets bit \p bit of *\p ptr and returns its previous value.
+ * The function is atomic and acts as a read-write memory barrier
+ * \param[in] ptr a pointer to an unsigned integer
+ * \param[in] bit index of the bit to reset in \p ptr
+ * \return the previous value of bit \p bit
+ */
+inline char atomic_bittestandreset_x86(volatile unsigned int* ptr, unsigned int bit) {
+    unsigned int prevVal = *ptr;
+    unsigned int newVal = prevVal & ~((unsigned int)1 << bit);
+    unsigned int expectedVal = prevVal;
+    bool worked = __atomic_compare_exchange(ptr, &expectedVal, &newVal, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    if (!worked) {
+        return 1; // retry
+    }
+    return char(prevVal >> bit & (unsigned int)1);
 }
 
 #elif defined(GEO_USE_ANDROID_ATOMICS)
